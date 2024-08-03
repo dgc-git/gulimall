@@ -35,14 +35,14 @@
                 <!-- 只需要引用，不需要重新定义 version 和 configuration -->
             </plugin>
             <!-- 使用父模块中配置的 spring-boot-maven-plugin -->
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <!-- 只需要引用，不需要重新定义 version 和 configuration -->
-                <configuration>
-                    <mainClass>com.atguigu.gulimall.member.GulimallMemberApplication</mainClass>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--                &lt;!&ndash; 只需要引用，不需要重新定义 version 和 configuration &ndash;&gt;-->
+<!--                <configuration>-->
+<!--                    <mainClass>com.atguigu.gulimall.member.GulimallMemberApplication</mainClass>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 

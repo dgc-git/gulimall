@@ -72,15 +72,15 @@
                 <!-- 只需要引用，不需要重新定义 version 和 configuration -->
             </plugin>
             <!-- 使用父模块中配置的 spring-boot-maven-plugin -->
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.3.12.RELEASE</version>
-                <!-- 只需要引用，不需要重新定义 version 和 configuration -->
-<!--                <configuration>-->
-<!--                    <mainClass>com.atguigu.gulimall.coupon.GulicommonApplication</mainClass>-->
-<!--                </configuration>-->
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--                <version>2.3.12.RELEASE</version>-->
+<!--                &lt;!&ndash; 只需要引用，不需要重新定义 version 和 configuration &ndash;&gt;-->
+<!--&lt;!&ndash;                <configuration>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <mainClass>com.atguigu.gulimall.coupon.GulicommonApplication</mainClass>&ndash;&gt;-->
+<!--&lt;!&ndash;                </configuration>&ndash;&gt;-->
+<!--            </plugin>-->
         </plugins>
     </build>
 </project>
