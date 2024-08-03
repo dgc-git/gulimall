@@ -40,10 +40,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <!-- 只需要引用，不需要重新定义 version 和 configuration -->
                 <configuration>
-                    <includes>
-                        <include>**/*Tests.java</include>
-                        <include>**/*Test.java</include>
-                    </includes>
                     <mainClass>com.atguigu.gulimall.product.GulimallProductApplication</mainClass>
                 </configuration>
             </plugin>

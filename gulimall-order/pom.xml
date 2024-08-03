@@ -33,7 +33,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <!-- 只需要引用，不需要重新定义 version 和 configuration -->
                 <configuration>
-                    <mainClass>com.atguigu.gulimall.coupon.GuliOrderApplication</mainClass>
+                    <mainClass>com.atguigu.gulimall.order.GuliOrderApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>

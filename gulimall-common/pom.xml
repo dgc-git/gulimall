@@ -62,14 +62,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -83,6 +75,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.3.12.RELEASE</version>
                 <!-- 只需要引用，不需要重新定义 version 和 configuration -->
 <!--                <configuration>-->
 <!--                    <mainClass>com.atguigu.gulimall.coupon.GulicommonApplication</mainClass>-->
