@@ -39,6 +39,8 @@
         <module>gulimall-member</module>
         <module>gulimall-order</module>
         <module>gulimall-common</module>
+        <module>gulimall-gateway</module>
+        <module>gulimall-third-party</module>
     </modules>
     <dependencyManagement>
         <dependencies>
@@ -115,6 +117,12 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+<!--            排除不了，强制使用3.0.2-->
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>3.0.2</version> <!-- 统一版本 -->
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -131,6 +139,24 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-enforcer-plugin</artifactId>-->
+<!--                <version>3.0.0-M3</version> &lt;!&ndash; 请根据最新版本选择 &ndash;&gt;-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>enforce</id>-->
+<!--                        <goals>-->
+<!--                            <goal>enforce</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <rules>-->
+<!--                                <dependencyConvergence/>-->
+<!--                            </rules>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
             <!--            &lt;!&ndash; 配置 spring-boot-maven-plugin &ndash;&gt;-->
             <!--            <plugin>-->
             <!--                <groupId>org.springframework.boot</groupId>-->

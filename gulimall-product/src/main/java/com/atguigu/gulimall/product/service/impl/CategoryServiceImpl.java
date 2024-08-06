@@ -37,7 +37,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         List<CategoryEntity> entities = baseMapper.selectList(null);
         //2.组装成父子的树形结构
         //2.1找到一级分类
-        return entities.stream().filter(Objects::nonNull).filter((categoryEntity -> categoryEntity.getParentCid() == 0))
+        return entities.stream().
+                filter(Objects::nonNull).
+                filter((categoryEntity -> categoryEntity.getParentCid() == 0))
                 .peek((menu) -> menu.setChildren(getChildrens(menu, entities)))
                 .sorted(Comparator.comparingInt(menu -> (menu.getSort() == null ? 0 : menu.getSort())))
                 .collect(Collectors.toList());
@@ -51,7 +53,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     //递归查找所有菜单的子菜单
     private List<CategoryEntity> getChildrens(CategoryEntity root, List<CategoryEntity> all) {
-        return all.stream().filter(categoryEntity -> categoryEntity.getParentCid().equals(root.getCatId()))
+        return all.stream().
+                filter(categoryEntity -> categoryEntity.getParentCid().equals(root.getCatId()))
                 .peek(categoryEntity -> categoryEntity.setChildren(getChildrens(categoryEntity, all)))
                 .sorted(Comparator.comparingInt(menu -> (menu.getSort() == null ? 0 : menu.getSort())))
                 .collect(Collectors.toList());

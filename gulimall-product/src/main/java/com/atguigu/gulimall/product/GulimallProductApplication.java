@@ -6,10 +6,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 
+/**
+ * 1.引入oss-starter
+ * 2.配置key，endpoint相关信息
+ * 3.使用ossClient进行文件上传
+ */
 @SpringBootApplication
 @MapperScan("com.atguigu.gulimall.product.dao")
 @EnableDiscoveryClient
 @RefreshScope
+
 public class GulimallProductApplication {
 
     public static void main(String[] args) {
