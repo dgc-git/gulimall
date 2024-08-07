@@ -17,6 +17,11 @@ import com.atguigu.gulimall.product.service.SpuInfoDescService;
 public class SpuInfoDescServiceImpl extends ServiceImpl<SpuInfoDescDao, SpuInfoDescEntity> implements SpuInfoDescService {
 
     @Override
+    public void saveSpuInfoDesc(SpuInfoDescEntity descEntity) {
+        this.baseMapper.insert(descEntity);
+    }
+
+    @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<SpuInfoDescEntity> page = this.page(
                 new Query<SpuInfoDescEntity>().getPage(params),
