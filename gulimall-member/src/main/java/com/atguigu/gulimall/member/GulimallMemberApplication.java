@@ -16,7 +16,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  */
 @SpringBootApplication
 @MapperScan("com.atguigu.gulimall.member.dao")
-@EnableFeignClients(basePackages = "com.atguigu.gulimall.member.feign")
+@EnableFeignClients(basePackages = "com.atguigu.gulimall.member.feign")//开启远程调用服务
 @EnableDiscoveryClient
 public class GulimallMemberApplication {
 
