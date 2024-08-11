@@ -19,3 +19,6 @@ mybatis-plus:
       id-type: auto
 server:
   port: 7000
+logging:
+  level:
+    com.atguigu.gulimall: debug
