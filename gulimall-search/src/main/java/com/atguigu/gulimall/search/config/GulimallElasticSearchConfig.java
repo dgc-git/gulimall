@@ -22,7 +22,7 @@ public class GulimallElasticSearchConfig {
     static{
         RequestOptions.Builder builder=RequestOptions.DEFAULT.toBuilder();
 //        builder.addHeader("Authorization","Bearer"+TOKEN);
-        COMMON_OPTIONS=builder.build()
+        COMMON_OPTIONS=builder.build();
     }
     @Bean
     public RestHighLevelClient esRestClient(){

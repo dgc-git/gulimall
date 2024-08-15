@@ -2,6 +2,7 @@ package com.atguigu.gulimall.ware.service.impl;
 
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.ware.feign.ProductFeignService;
+import com.atguigu.common.to.SkuHasStockVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -40,6 +42,23 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public List<SkuHasStockVo> getSkuHasStock(List<Long> skuIds) {
+        QueryWrapper<WareSkuEntity> wrapper = new QueryWrapper<>();
+        wrapper.in("sku_id", skuIds)
+                .groupBy("sku_id")
+                .select("sku_id", "SUM(stock - stock_locked) as remainStock");//todo bug?
+        // 执行查询并获取结果
+        List<Map<String, Object>> resultMapList = baseMapper.selectMaps(wrapper);
+        // 将结果映射到 VO 中
+        return resultMapList.stream().map(resultMap -> {
+             SkuHasStockVo vo = new SkuHasStockVo();
+            vo.setSkuId((Long) resultMap.get("sku_id"));
+            vo.setHasStock((Long) resultMap.get("remainStock") >0);
+            return vo;
+        }).collect(Collectors.toList());
     }
 
     @Override

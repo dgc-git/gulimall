@@ -11,7 +11,7 @@ class GulimallSearchApplicationTests {
     @Autowired
     private RestHighLevelClient client;
     @Test
-    void contextLoads() {
+    void indexData() {
         System.out.println(client);
     }
 

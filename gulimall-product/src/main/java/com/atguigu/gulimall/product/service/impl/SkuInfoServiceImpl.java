@@ -1,10 +1,12 @@
 package com.atguigu.gulimall.product.service.impl;
 
+import com.atguigu.gulimall.product.entity.SpuInfoEntity;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -20,6 +22,13 @@ import com.atguigu.gulimall.product.service.SkuInfoService;
 
 @Service("skuInfoService")
 public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> implements SkuInfoService {
+
+    @Override
+    public List<SkuInfoEntity> getSkusBySpuId(Long spuId) {
+        LambdaQueryWrapper<SkuInfoEntity> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SkuInfoEntity::getSpuId,spuId);
+        return this.list(wrapper);
+    }
 
     @Override
     public PageUtils queryPageByCondition(Map<String, Object> params) {

@@ -180,6 +180,14 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     }
 
     @Override
+    public List<Long> selectSearchAttrIds(List<Long> attrIds) {
+        LambdaQueryWrapper<AttrEntity> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(AttrEntity::getAttrType,1).in(AttrEntity::getAttrId,attrIds).select(AttrEntity::getAttrId);
+        List<AttrEntity> attrEntities = baseMapper.selectList(wrapper);
+        return attrEntities.stream().map(AttrEntity::getAttrId).collect(Collectors.toList());
+    }
+
+    @Override
     public PageUtils getNoRelationAttr(Long attrgroupId, Map<String, Object> params) {
         //1当前分组只能关联自己所属分类里的所有属性
         AttrGroupEntity attrGroupEntity = attrGroupDao.selectById(attrgroupId);
