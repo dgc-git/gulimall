@@ -8,8 +8,12 @@
 
 package com.atguigu.common.utils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.apache.http.HttpStatus;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,18 +22,22 @@ import java.util.Map;
  *
  * @author Mark sunlightcs@gmail.com
  */
-public class R<T> extends HashMap<String, Object> {
-    private T Data;
-
-    public T getData() {
-        return Data;
-    }
-
-    public void setData(T data) {
-        Data = data;
-    }
+public class R extends HashMap<String, Object> {
 
     private static final long serialVersionUID = 1L;
+
+    public R setData(Object data) {
+        put("data", data);
+        return this;
+    }
+
+    //使用fastjson进行逆转
+    public <T> T getData(TypeReference<T> typeReference) {
+        Object data = get("data");
+        String jsonString = JSON.toJSONString(data, SerializerFeature.DisableCircularReferenceDetect);
+        T t = JSON.parseObject(jsonString, typeReference);
+        return t;
+    }
 
     public R() {
         put("code", 0);
@@ -75,4 +83,6 @@ public class R<T> extends HashMap<String, Object> {
     public Integer getCode() {
         return (Integer) this.get("code");
     }
+
+
 }

@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -56,7 +57,8 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         return resultMapList.stream().map(resultMap -> {
              SkuHasStockVo vo = new SkuHasStockVo();
             vo.setSkuId((Long) resultMap.get("sku_id"));
-            vo.setHasStock(resultMap.get("remainStock") != null && (Long) resultMap.get("remainStock") > 0);
+            BigDecimal remainStock = (BigDecimal) resultMap.get("remainStock");
+            vo.setHasStock(remainStock != null && remainStock.longValue() > 0);
             return vo;
         }).collect(Collectors.toList());
     }
