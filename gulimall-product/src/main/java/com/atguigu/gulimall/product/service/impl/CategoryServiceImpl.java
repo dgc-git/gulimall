@@ -52,19 +52,24 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Override
     public Map<String, List<Catelog2Vo>> getCatalogJson() {
+        /**
+         * 将多次查库变为一次
+         */
+        List<CategoryEntity> selectList = baseMapper.selectList(null);
+
         //查出所有1级分类
-        List<CategoryEntity> level1Categorys = getLevel1Categorys();
+        List<CategoryEntity> level1Categorys = getParentCid(selectList,0L);
         //封装数据
         Map<String, List<Catelog2Vo>> parent_cid = level1Categorys.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
             //每一个一级分类，查到这个一级分类的所有二级分类
-            List<CategoryEntity> categoryEntities = baseMapper.selectList(new LambdaQueryWrapper<CategoryEntity>().eq(CategoryEntity::getParentCid, v.getCatId()));
+            List<CategoryEntity> categoryEntities = getParentCid(selectList,v.getCatId());
             //2.封装上面的结果
             List<Catelog2Vo> catelog2Vos = null;
             if (categoryEntities != null) {
                 catelog2Vos = categoryEntities.stream().map(l2 -> {
                     Catelog2Vo catelog2Vo = new Catelog2Vo(v.getCatId().toString(), null, l2.getCatId().toString(), l2.getName());
                     //找当前2级分类的三级分类，封装成vo
-                    List<CategoryEntity> level3Catelog = baseMapper.selectList(new LambdaQueryWrapper<CategoryEntity>().eq(CategoryEntity::getParentCid, l2.getCatId()));
+                    List<CategoryEntity> level3Catelog = getParentCid(selectList,l2.getCatId());
                     if (level3Catelog != null) {
                         List<Catelog2Vo.catelog3Vo> collect = level3Catelog.stream().map(l3 -> {
                             //封装成指定格式
@@ -80,6 +85,11 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             return catelog2Vos;
         }));
         return parent_cid;
+    }
+
+    private List<CategoryEntity> getParentCid(List<CategoryEntity> selectList,Long parentCid) {
+//        return baseMapper.selectList(new LambdaQueryWrapper<CategoryEntity>().eq(CategoryEntity::getParentCid, v.getCatId()));
+        return selectList.stream().filter(item -> Objects.equals(item.getParentCid(), parentCid)).collect(Collectors.toList());
     }
 
     @Override
