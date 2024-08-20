@@ -18,6 +18,8 @@ spring:
     cache: false
   resources:
     static-locations: classpath:templates/,classpath:static/
+  redis:
+    host: 192.168.238.100
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
