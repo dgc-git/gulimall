@@ -3,6 +3,7 @@ package com.atguigu.gulimall.product.web;
 import com.atguigu.gulimall.product.entity.CategoryEntity;
 import com.atguigu.gulimall.product.service.CategoryService;
 import com.atguigu.gulimall.product.vo.Catelog2Vo;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +26,8 @@ import java.util.Map;
 public class IndexController {
     @Autowired
     CategoryService categoryService;
+    @Autowired
+    RedissonClient redisson;
     @GetMapping({"/","/index.html"})
     public String indexPage(Model model){
         //1.查出所有一级分类

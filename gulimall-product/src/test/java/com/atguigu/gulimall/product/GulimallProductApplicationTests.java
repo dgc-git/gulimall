@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -20,11 +21,16 @@ class GulimallProductApplicationTests {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    RedissonClient redissonClient;
     @Test
     public void teseFindPath() {
 //        Long[] catelogPath = categoryService.findCatelogPath(225L);
 //        log.info("完整路径：{}", Arrays.asList(catelogPath));
+        System.out.println(redissonClient);
     }
+
+
 }
 
 
