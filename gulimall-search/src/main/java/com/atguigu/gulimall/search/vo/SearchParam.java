@@ -20,9 +20,9 @@ public class SearchParam {
      *  catalog3Id
      *  attrs
      */
-    private Integer hasStock;
+    private Integer hasStock=1;
     private String skuPrice;
     private List<Long> brandId;
     private List<String> attrs;
-    private Integer pageNum;
+    private Integer pageNum=1;
 }
