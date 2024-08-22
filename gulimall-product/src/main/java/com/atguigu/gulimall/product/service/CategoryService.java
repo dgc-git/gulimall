@@ -28,5 +28,10 @@ public interface CategoryService extends IService<CategoryEntity> {
     List<CategoryEntity> getLevel1Categorys();
 
     Map<String, List<Catelog2Vo>>getCatalogJson();
+    /**
+     * 级联更新所有关联表的冗余数据
+     */
+    void updateCascade(CategoryEntity category);
+
 }
 
