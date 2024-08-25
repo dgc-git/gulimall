@@ -8,6 +8,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author dgc
  * @date 2024/8/22 11:23
@@ -16,9 +19,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class SearchController {
     @Autowired
     MallSearchService mallSearchService;
-    @GetMapping("/list.html")
-    public String listPage(SearchParam param, Model model){
+    @GetMapping({"/", "/list.html"})
+    public String listPage(SearchParam param, Model model, HttpServletRequest request){
+        String queryString = request.getQueryString();
+        param.set_queryString(queryString);
         SearchResult result=mallSearchService.search(param);
+        System.out.println("result"+result);
         model.addAttribute("result",result);
         return "list";
     }

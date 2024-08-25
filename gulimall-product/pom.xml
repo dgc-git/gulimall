@@ -13,6 +13,12 @@
     <description>gulimall-product</description>
 
     <dependencies>
+<!--        绑定配置文件会有提示的依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>com.atguigu.gulimall</groupId>
             <artifactId>gulimall-common</artifactId>

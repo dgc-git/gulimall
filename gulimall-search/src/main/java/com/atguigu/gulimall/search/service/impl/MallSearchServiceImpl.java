@@ -18,7 +18,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.nested.ParsedNested;
@@ -33,10 +32,15 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.FutureTask;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -84,6 +88,7 @@ public class MallSearchServiceImpl implements MallSearchService {
         }
         result.setProducts(esModels);
 //        //2.所有商品涉及到的所有属性信息
+        HashMap<Long, String> map = new HashMap<>();
         List<SearchResult.AttrVo> attrVos = new ArrayList<>();
         ParsedNested attrAgg = response.getAggregations().get("attr_agg");
         ParsedLongTerms attrIdAgg = attrAgg.getAggregations().get("attr_id_agg");
@@ -94,6 +99,7 @@ public class MallSearchServiceImpl implements MallSearchService {
                 long attrId = bucket.getKeyAsNumber().longValue();
                 //属性名
                 String attrName = ((ParsedStringTerms) (bucket.getAggregations().get("attr_name_agg"))).getBuckets().get(0).getKeyAsString();
+                map.put(attrId, attrName);
                 //属性值
                 List<String> attrValues = ((ParsedStringTerms) (bucket.getAggregations().get("attr_value_agg"))).getBuckets().stream().map(item -> {
                     String keyAsString = item.getKeyAsString();
@@ -102,6 +108,7 @@ public class MallSearchServiceImpl implements MallSearchService {
                 attrVo.setAttrId(attrId);
                 attrVo.setAttrName(attrName);
                 attrVo.setAttrValue(attrValues);
+
                 attrVos.add(attrVo);
             }
         }
@@ -109,6 +116,7 @@ public class MallSearchServiceImpl implements MallSearchService {
 //        //3.所有商品涉及到的所有品牌信息
         List<SearchResult.BrandVo> brandVos = new ArrayList<>();
         ParsedLongTerms brandAgg = response.getAggregations().get("brand_agg");
+        HashMap<Long, String> brandMap = new HashMap<>();
         if (brandAgg.getBuckets() != null && brandAgg.getBuckets().size() > 0) {
             for (Terms.Bucket bucket : brandAgg.getBuckets()) {
                 SearchResult.BrandVo brandVo = new SearchResult.BrandVo();
@@ -119,6 +127,7 @@ public class MallSearchServiceImpl implements MallSearchService {
                 String brandImg = ((ParsedStringTerms) bucket.getAggregations().get("brand_img_agg")).getBuckets().get(0).getKeyAsString();
                 //品牌名
                 String brandName = ((ParsedStringTerms) bucket.getAggregations().get("brand_name_agg")).getBuckets().get(0).getKeyAsString();
+                brandMap.put(brandId, brandName);
                 brandVo.setBrandId(brandId);
                 brandVo.setBrandImg(brandImg);
                 brandVo.setBrandName(brandName);
@@ -148,7 +157,59 @@ public class MallSearchServiceImpl implements MallSearchService {
         result.setTotal(total);
         int totalPages = (int) (total + EsConstant.PRODUCT_PAGESIZE - 1) / EsConstant.PRODUCT_PAGESIZE;
         result.setTotalPages(totalPages);
+        List<Integer> pageNavs = new ArrayList<>();
+        for (int i = 0; i <= totalPages; i++) {
+            pageNavs.add(i);
+        }
+        result.setPageNavs(pageNavs);
+        //构建面包屑导航功能
+        if (param.getAttrs() != null && param.getAttrs().size() > 0) {
+            List<SearchResult.NavVo> navVos = param.getAttrs().stream().map(attr -> {
+                SearchResult.NavVo navVo = new SearchResult.NavVo();
+                //attrs=2_5寸；6存
+                String[] split = attr.split("_");
+                String attrName = map.get(Long.valueOf(split[0]));
+                result.getAttrIds().add(Long.valueOf(split[0]));
+                navVo.setNavName(attrName);
+                navVo.setNavValue(split[1]);
+                //取消面包屑以后，我们要跳转的地方
+                //拿到所有的查询条件，去掉当前。
+                String replace = replaceQueryString(param, attr, "attrs");
+                navVo.setLink("http://search.gulimall.com/list.html?" + replace);
+                return navVo;
+            }).collect(Collectors.toList());
+            result.setNavs(navVos);
+        }
+        //品牌。分类
+        if (param.getBrandId() != null && param.getBrandId().size() > 0) {
+            List<SearchResult.NavVo> navs = result.getNavs();
+            SearchResult.NavVo navVo = new SearchResult.NavVo();
+            navVo.setNavName("品牌");
+            StringBuffer stringBuffer = new StringBuffer();
+            String replace = "";
+            for (Long brandId : param.getBrandId()) {
+                stringBuffer.append(brandMap.get(brandId) + ";");
+                replace = replaceQueryString(param, String.valueOf(brandId), "brandId");
+
+            }
+            navVo.setNavValue(stringBuffer.toString());
+            navVo.setLink("http://search.gulimall.com/list.html?" + replace);
+            navs.add(navVo);
+        }
         return result;
+    }
+
+    private static String replaceQueryString(SearchParam param, String value, String key) {
+        String encode;
+        try {
+            encode = URLEncoder.encode(value, "UTF-8");
+            encode = encode.replace("+", "%20");//浏览器与java对空格的编码不一样
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        String replace = param.get_queryString().replace("&" + key + "=" + encode, "");
+        return replace.replace(key + "=" + encode, "");//防止没有"&"的时候替换不掉的情况出现
+
     }
 
     /**
@@ -253,7 +314,6 @@ public class MallSearchServiceImpl implements MallSearchService {
         attrIdAgg.subAggregation(AggregationBuilders.terms("attr_value_agg").field("attrs.attrValue").size(50));
         attr_agg.subAggregation(attrIdAgg);
         searchSourceBuilder.aggregation(attr_agg);
-        System.out.println("构建的dsl语句：" + searchSourceBuilder.toString());
         return new SearchRequest(new String[]{EsConstant.PRODUCT_INDEX}, searchSourceBuilder);
     }
 }
