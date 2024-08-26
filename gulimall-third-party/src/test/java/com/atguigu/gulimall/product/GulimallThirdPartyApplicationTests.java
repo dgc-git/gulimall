@@ -7,6 +7,7 @@ import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.PutObjectRequest;
 import com.aliyun.oss.model.PutObjectResult;
 import com.atguigu.gulimall.thirdparty.GulimallThirdPartyApplication;
+import com.atguigu.gulimall.thirdparty.component.SmsComponent;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +24,8 @@ class GulimallThirdPartyApplicationTests {
     private OSS ossClient;
     @Value("alibaba.cloud.oss.endpoint")
     private String endpoint;
+    @Autowired
+    private SmsComponent smsComponent;
 
 //    @Test
 //    void testUpload() throws ClientException {
@@ -63,6 +66,10 @@ class GulimallThirdPartyApplicationTests {
 //            }
 //        }
 //    }
+    @Test
+    public void testSendCode(){
+        smsComponent.sendCode("18280349792","78787");
+    }
 
     }
 
