@@ -43,7 +43,7 @@ public class SmsComponent {
 
             // 拼接请求参数
             String urlParameters = "param=" + "**code**:"+code+",**minute**:5" + "&mobile=" + mobile + "&templateId=" + templateId + "&smsSignId=" + smsSignId;
-
+            System.out.println(urlParameters);
             // 将参数写入请求体
             try (DataOutputStream wr = new DataOutputStream(httpURLCon.getOutputStream())) {
                 wr.writeBytes(urlParameters);
