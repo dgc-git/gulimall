@@ -72,7 +72,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encode = passwordEncoder.encode(memberRegistVo.getPassword());
         memberEntity.setPassword(encode);
-
+        memberEntity.setNickname(memberRegistVo.getUserName());
         baseMapper.insert(memberEntity);
     }
 
