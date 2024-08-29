@@ -20,6 +20,8 @@ import java.util.concurrent.ExecutionException;
  * @Version: v1.0
  */
 @Controller
+
+
 public class ItemController {
     @Autowired
     SkuInfoService skuInfoService;
