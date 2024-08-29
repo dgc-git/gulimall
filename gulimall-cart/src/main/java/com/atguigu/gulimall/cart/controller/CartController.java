@@ -14,12 +14,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Controller
 public class CartController {
     @Autowired
     CartService cartService;
+    @GetMapping("/currentUserCartItems")
+    public List<CartItem> getCurrentUserCartItems(){
+        return cartService.getCurrentUserCartItems();
+    }
     @GetMapping("/deleteItem")
     public String deleteItem(@RequestParam("skuId") Long skuId){
         cartService.deleteItem(skuId);

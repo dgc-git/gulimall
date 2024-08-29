@@ -10,7 +10,17 @@ spring:
     host: 192.168.238.100
     port: 5672
     virtual-host: /
+    publisher-returns: true
+    template:
+      #只要抵达队列，以异步方式优先回调returnconfirm
+      mandatory: true
+    listener:
+      simple:
+        #手动ack
+        acknowledge-mode: manual
     publisher-confirm-type: correlated
+  thymeleaf:
+    cache: false
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
   global-config:

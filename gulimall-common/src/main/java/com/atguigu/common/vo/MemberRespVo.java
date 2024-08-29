@@ -11,4 +11,5 @@ import java.io.Serializable;
 @Data
 public class MemberRespVo implements Serializable {
     private Long id;
+    private Integer integration;
 }
