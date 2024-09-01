@@ -26,6 +26,11 @@ public class SpuInfoController {
     @Autowired
     private SpuInfoService spuInfoService;
 
+    @PostMapping("/skuId/{id}")
+    public R getSpuInfoBySkuId(@PathVariable("id") Long skuId){
+        SpuInfoEntity spuInfo=spuInfoService.getSpuInfoBySkuId(skuId);
+        return R.ok().setData(spuInfo);
+    }
     @PostMapping("/{spuId}/up")
     public R spuUp(@PathVariable("spuId") Long spuId) {
         spuInfoService.up(spuId);
