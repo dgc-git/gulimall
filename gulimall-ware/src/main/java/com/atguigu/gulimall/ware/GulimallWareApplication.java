@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.ware;
 
+import io.seata.spring.annotation.datasource.EnableAutoDataSourceProxy;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableDiscoveryClient
 @EnableTransactionManagement
 @EnableFeignClients
+@EnableAutoDataSourceProxy
 public class GulimallWareApplication {
 
     public static void main(String[] args) {

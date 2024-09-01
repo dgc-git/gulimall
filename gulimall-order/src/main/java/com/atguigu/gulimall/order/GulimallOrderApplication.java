@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.order;
 
+import io.seata.spring.annotation.datasource.EnableAutoDataSourceProxy;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.SpringApplication;
@@ -16,6 +17,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 @EnableFeignClients
 @EnableDiscoveryClient
 @EnableAspectJAutoProxy(exposeProxy = true)
+@EnableAutoDataSourceProxy
 public class GulimallOrderApplication {
 
     public static void main(String[] args) {
