@@ -17,6 +17,7 @@ import com.atguigu.gulimall.product.service.*;
 import com.atguigu.gulimall.product.vo.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,8 +83,12 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     }
 
     //todo 高级部分继续完善
+    /**
+     * seata的AT模式，适合非高并发场景
+     */
     @Override
     @Transactional
+    @GlobalTransactional
     public void saveSpuInfo(SpuSaveVO spuSaveVO) {
         //1.保存spu基本信息pms_spu_info
         SpuInfoEntity spuInfoEntity = new SpuInfoEntity();

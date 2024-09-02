@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.ware.config;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.zaxxer.hikari.HikariDataSource;
 import io.seata.rm.datasource.DataSourceProxy;
@@ -31,9 +32,9 @@ public class MybatisConfig {
 
     @Bean
     public DataSource dataSource(DataSourceProperties dataSourceProperties) {
-        HikariDataSource datasource = dataSourceProperties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
+        DruidDataSource datasource = dataSourceProperties.initializeDataSourceBuilder().type(DruidDataSource.class).build();
         if (StringUtils.hasText(dataSourceProperties.getName())) {
-            datasource.setPoolName(dataSourceProperties.getName());
+            datasource.setName(dataSourceProperties.getName());
         }
         return new DataSourceProxy(datasource);
     }
