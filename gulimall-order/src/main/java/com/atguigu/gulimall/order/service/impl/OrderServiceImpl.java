@@ -14,6 +14,7 @@ import com.atguigu.gulimall.order.interceptor.LoginUserInterceptor;
 import com.atguigu.gulimall.order.service.OrderItemService;
 import com.atguigu.gulimall.order.to.OrderCreateTo;
 import com.atguigu.gulimall.order.vo.*;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     StringRedisTemplate redisTemplate;
     @Autowired
     ProductFeignService productFeignService;
+
+    @Override
+    public OrderEntity getOrderByOrderSn(String orderSn) {
+        return getOne(new LambdaQueryWrapper<OrderEntity>().eq(OrderEntity::getOrderSn, orderSn));
+    }
 
     @Override
     @Transactional

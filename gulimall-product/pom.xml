@@ -18,7 +18,10 @@
             <groupId>com.atguigu.gulimall</groupId>
             <artifactId>gulimall-common</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+        </dependency>
 
     </dependencies>
 

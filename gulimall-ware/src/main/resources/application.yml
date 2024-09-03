@@ -14,6 +14,8 @@ spring:
     name: gulimall-ware
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
+  redis:
+    host: 192.168.238.100
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
   global-config:
@@ -24,3 +26,4 @@ server:
 logging:
   level:
     com.atguigu: debug
+

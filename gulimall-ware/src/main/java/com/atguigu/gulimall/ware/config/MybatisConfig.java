@@ -3,7 +3,6 @@ package com.atguigu.gulimall.ware.config;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.zaxxer.hikari.HikariDataSource;
-import io.seata.rm.datasource.DataSourceProxy;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -30,12 +29,5 @@ public class MybatisConfig {
         return paginationInterceptor;
     }
 
-    @Bean
-    public DataSource dataSource(DataSourceProperties dataSourceProperties) {
-        DruidDataSource datasource = dataSourceProperties.initializeDataSourceBuilder().type(DruidDataSource.class).build();
-        if (StringUtils.hasText(dataSourceProperties.getName())) {
-            datasource.setName(dataSourceProperties.getName());
-        }
-        return new DataSourceProxy(datasource);
-    }
+
 }
