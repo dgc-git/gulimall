@@ -2,6 +2,7 @@ package com.atguigu.gulimall.order.service.impl;
 
 import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.exception.NoStockException;
+import com.atguigu.common.to.mq.OrderTo;
 import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberRespVo;
 import com.atguigu.gulimall.order.constant.OrderConstant;
@@ -17,6 +18,8 @@ import com.atguigu.gulimall.order.vo.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import io.seata.spring.annotation.GlobalTransactional;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -63,6 +66,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     StringRedisTemplate redisTemplate;
     @Autowired
     ProductFeignService productFeignService;
+    @Autowired
+    RabbitTemplate rabbitTemplate;
+    @Override
+    public void closeOrder(OrderEntity entity) {
+        OrderEntity orderEntity = this.getById(entity.getId());
+        if(orderEntity.getStatus()== com.atguigu.gulimall.order.enume.OrderConstant.OrderStatusEnum.CREATE_NEW.getCode()){
+            //关单
+            orderEntity.setStatus(com.atguigu.gulimall.order.enume.OrderConstant.OrderStatusEnum.CANCLED.getCode());
+            this.updateById(orderEntity);
+            OrderTo orderTo = new OrderTo();
+            BeanUtils.copyProperties(orderEntity,orderTo);
+            rabbitTemplate.convertAndSend("order-event-exchange","order.release.other",orderTo);
+        }
+    }
 
     @Override
     public OrderEntity getOrderByOrderSn(String orderSn) {
@@ -116,6 +133,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                     //成功
                     response.setOrder(order.getOrder());
                     //todo 远程扣减积分
+                    //todo 订单创建成功，发送消息给mq
+                    rabbitTemplate.convertAndSend("order-event-exchange","order.create.order",
+                            order.getOrder());
                     return response;
                 }else {
                     response.setCode(3);

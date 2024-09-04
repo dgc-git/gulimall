@@ -22,10 +22,10 @@ import java.util.Map;
 public class MyRabbitConfig {
     @Autowired
     RabbitTemplate rabbitTemplate;
-    @RabbitListener(queues = "stock.release.stock.queue")
-    public void handle(Message message){
-
-    }
+//    @RabbitListener(queues = "stock.release.stock.queue")
+//    public void handle(Message message){
+//
+//    }
 
     @Bean
     public MessageConverter messageConverter() {

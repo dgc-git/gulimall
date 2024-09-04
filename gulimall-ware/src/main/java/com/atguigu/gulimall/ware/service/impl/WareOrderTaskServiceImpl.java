@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.ware.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -15,6 +16,11 @@ import com.atguigu.gulimall.ware.service.WareOrderTaskService;
 
 @Service("wareOrderTaskService")
 public class WareOrderTaskServiceImpl extends ServiceImpl<WareOrderTaskDao, WareOrderTaskEntity> implements WareOrderTaskService {
+
+    @Override
+    public WareOrderTaskEntity getOderTaskByOrderSn(String orderSn) {
+        return this.getOne(new LambdaQueryWrapper<WareOrderTaskEntity>().eq(WareOrderTaskEntity::getOrderSn,orderSn));
+    }
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {

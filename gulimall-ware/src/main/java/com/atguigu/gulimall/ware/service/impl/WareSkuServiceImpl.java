@@ -2,6 +2,7 @@ package com.atguigu.gulimall.ware.service.impl;
 
 import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.exception.NoStockException;
+import com.atguigu.common.to.mq.OrderTo;
 import com.atguigu.common.to.mq.StockDetailTo;
 import com.atguigu.common.to.mq.StockLockedTo;
 import com.atguigu.common.utils.R;
@@ -76,6 +77,28 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
     }
 
     /**
+     * 防止订单服务卡顿导致订单状态消息一直改不了，库存消息优先到期，查订单状态为新建，就什么都不做就丢掉了，导致卡顿的订单永远不能解锁
+     * @param orderTo
+     */
+    @Override
+    @Transactional
+    public void unlockStock(OrderTo orderTo) {
+        String orderSn = orderTo.getOrderSn();
+        //查询订单状态
+        R r = orderFeignService.getOrderStatus(orderSn);
+        //此处不需要查订单状态了
+        //需要查一下库存最新的解锁状态，防止重复解锁库存
+        WareOrderTaskEntity task=wareOrderTaskService.getOderTaskByOrderSn(orderSn);
+        Long id = task.getId();
+        //按照库存工作单id找到所有没解锁状态的库存进行解锁
+        List<WareOrderTaskDetailEntity> entities = wareOrderTaskDetailService.list(new LambdaQueryWrapper<WareOrderTaskDetailEntity>().eq(WareOrderTaskDetailEntity::getTaskId, id).eq(WareOrderTaskDetailEntity::getLockStatus, 1));
+        for (WareOrderTaskDetailEntity entity : entities) {
+            //此处注意有并发问题，和自动解锁的并发，可以自定义sql解决
+            unLockStock(entity.getSkuId(),entity.getWareId(),entity.getSkuNum(),entity.getId());
+        }
+    }
+
+    /**
      * 默认只要是运行时异常都会回滚
      * @param
      * @return
@@ -101,9 +124,11 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                     //订单数据返回成功
                     OrderVo data = r.getData(new TypeReference<OrderVo>() {
                     });
-                    if(data==null || data.getStatus()==4){
                         //订单已经被取消，才能正确解锁
+                        if(byId.getLockStatus()==1){
+                            //当前工作单状态为锁定状态才需要解锁
                         unLockStock(detail.getSkuId(),detail.getWareId(),detail.getSkuNum(),detailId);
+                        }
 //                        channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
                     }
                 }else {
@@ -112,10 +137,10 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
 //                    channel.basicReject(message.getMessageProperties().getDeliveryTag(),true);
                 }
 
-            } else {
-                //没有：库存锁定失败，库存已经回滚，这种情况无需解锁
-//                channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
-            }
+//            } else {
+//                //没有：库存锁定失败，库存已经回滚，这种情况无需解锁
+////                channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
+//            }
         }
 //        catch (Exception e) {
 //            System.out.println("错误..."+e.getMessage());
@@ -211,6 +236,11 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
 
     private void unLockStock(Long skuId,Long wareId,Integer num,Long taskDetailId){
         wareSkuDao.unLockStock(skuId,wareId,num);
+        //更新库存工作单状态
+        WareOrderTaskDetailEntity entity = new WareOrderTaskDetailEntity();
+        entity.setId(taskDetailId);
+        entity.setLockStatus(2);
+        wareOrderTaskDetailService.updateById(entity);
     }
 
     @Data
