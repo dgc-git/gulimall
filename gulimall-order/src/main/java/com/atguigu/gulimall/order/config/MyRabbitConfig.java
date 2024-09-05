@@ -35,6 +35,8 @@ public class MyRabbitConfig {
         rabbitTemplate.setConfirmCallback(new RabbitTemplate.ConfirmCallback() {
             @Override
             public void confirm(CorrelationData correlationData, boolean b, String s) {
+                //服务器收到
+                //todo 修改消息状态为服务器已收到（已发送->已收到）
                 System.out.println(correlationData + "===>" + b + "===>" + s);
             }
         });
@@ -42,6 +44,9 @@ public class MyRabbitConfig {
         rabbitTemplate.setReturnCallback(new RabbitTemplate.ReturnCallback() {
             @Override
             public void returnedMessage(Message message, int i, String s, String s1, String s2) {
+                //报错误了
+                //需要修改数据库当前消息的状态->错误。（已收到->错误抵达）
+                //todo 是否需要消费者消费消息后再修改消息记录呢->可以不用，因为使用幂等性可以解决这个问题，即使重复消费也不会出现问题
                 System.out.println(message.toString()+i+s+s1+s2);
             }
         });

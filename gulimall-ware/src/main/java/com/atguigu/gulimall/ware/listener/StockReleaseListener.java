@@ -29,6 +29,9 @@ public class StockReleaseListener {
         System.out.println("收到解锁消息");
 
         try {
+            //当前消息是否重新派发
+            //todo 结合业务逻辑需要重新判断
+            Boolean redelivered = message.getMessageProperties().getRedelivered();
             wareSkuService.unlockStock(to);
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         } catch (Exception e) {

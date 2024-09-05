@@ -18,6 +18,7 @@ import com.atguigu.gulimall.order.vo.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import io.seata.spring.annotation.GlobalTransactional;
+import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +69,24 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     ProductFeignService productFeignService;
     @Autowired
     RabbitTemplate rabbitTemplate;
+
+    @Override
+    public PayVO getOrderPay(String orderSn) {
+        PayVO payVO = new PayVO();
+        List<OrderItemEntity> orderItemList = orderItemService.list(new LambdaQueryWrapper<OrderItemEntity>().eq(OrderItemEntity::getOrderSn, orderSn));
+
+        OrderEntity order = this.getOrderByOrderSn(orderSn);
+
+        payVO.setTotal_amount(order.getPayAmount().setScale(2,BigDecimal.ROUND_UP).toString());
+        payVO.setOut_trade_no(order.getOrderSn());
+        //订单标题
+        payVO.setSubject(orderItemList.get(0).getSkuName());
+        //备注
+        payVO.setBody(orderItemList.get(0).getSkuAttrsVals());
+
+        return payVO;
+    }
+
     @Override
     public void closeOrder(OrderEntity entity) {
         OrderEntity orderEntity = this.getById(entity.getId());
@@ -77,7 +96,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             this.updateById(orderEntity);
             OrderTo orderTo = new OrderTo();
             BeanUtils.copyProperties(orderEntity,orderTo);
-            rabbitTemplate.convertAndSend("order-event-exchange","order.release.other",orderTo);
+            try {
+                //todo 保证消息一定发送出去，每一个消息都做好日志记录，可以考虑先发日志，保证日志记录成功（给数据库保存每个消息的详细信息）
+                //todo 定期扫描数据库，将失败的消息重发，可以考虑不存数据库，不适合高并发
+                rabbitTemplate.convertAndSend("order-event-exchange","order.release.other",orderTo);
+            } catch (AmqpException e) {
+                //todo 将失败消息重复发送
+                throw new RuntimeException(e);
+            }
         }
     }
 

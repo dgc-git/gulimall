@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 /**
  * 远程调用服务：
@@ -18,6 +19,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @MapperScan("com.atguigu.gulimall.member.dao")
 @EnableFeignClients(basePackages = "com.atguigu.gulimall.member.feign")//开启远程调用服务
 @EnableDiscoveryClient
+@EnableRedisHttpSession
 public class GulimallMemberApplication {
 
     public static void main(String[] args) {
