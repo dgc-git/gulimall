@@ -19,7 +19,8 @@ public class LoginUserInterceptor implements HandlerInterceptor {
         //@GetMapping("order/order/status/{orderSn}")
         String uri = request.getRequestURI();
         boolean match = new AntPathMatcher().match("/order/order/status/**", uri);
-        if(match){
+        boolean match1 = new AntPathMatcher().match("/payed/notify", uri);
+        if(match || match1){
             //todo 添加对requesthost的判断，更加安全
             //request.getRemoteHost();
             return true;

@@ -7,12 +7,14 @@ import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberRespVo;
 import com.atguigu.gulimall.order.constant.OrderConstant;
 import com.atguigu.gulimall.order.entity.OrderItemEntity;
+import com.atguigu.gulimall.order.entity.PaymentInfoEntity;
 import com.atguigu.gulimall.order.feign.CartFeignService;
 import com.atguigu.gulimall.order.feign.MemberFeignService;
 import com.atguigu.gulimall.order.feign.ProductFeignService;
 import com.atguigu.gulimall.order.feign.WmsFeignService;
 import com.atguigu.gulimall.order.interceptor.LoginUserInterceptor;
 import com.atguigu.gulimall.order.service.OrderItemService;
+import com.atguigu.gulimall.order.service.PaymentInfoService;
 import com.atguigu.gulimall.order.to.OrderCreateTo;
 import com.atguigu.gulimall.order.vo.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -69,6 +71,49 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     ProductFeignService productFeignService;
     @Autowired
     RabbitTemplate rabbitTemplate;
+    @Autowired
+    PaymentInfoService paymentInfoService;
+
+    /**
+     * 处理支付宝的支付结果
+     * @param vo
+     * @return
+     */
+    @Override
+    public String handleAlipayed(PayAsyncVO vo) {
+        //保存交易流水
+        PaymentInfoEntity infoEntity = new PaymentInfoEntity();
+        infoEntity.setAlipayTradeNo(vo.getTrade_no());
+        infoEntity.setOrderSn(vo.getOut_trade_no());
+        infoEntity.setPaymentStatus(vo.getTrade_status());
+        infoEntity.setCallbackTime(vo.getNotify_time());
+
+        paymentInfoService.save(infoEntity);
+        //2.修改订单状态信息
+        if(vo.getTrade_status().equals("TRADE_SUCCESS")|| vo.getTrade_status().equals("TRADE_FINISHED")){
+            //支付成功状态
+            String outTradeNo = vo.getOut_trade_no();
+          baseMapper.updateOrderPayedStatus(outTradeNo, com.atguigu.gulimall.order.enume.OrderConstant.OrderStatusEnum.PAYED.getCode());
+        }
+        return "SUCCESS";
+    }
+
+    @Override
+    public PageUtils listWithItem(Map<String, Object> params) {
+        MemberRespVo memberRespVo = LoginUserInterceptor.loginUser.get();
+        IPage<OrderEntity> page = this.page(
+                new Query<OrderEntity>().getPage(params),
+                new LambdaQueryWrapper<OrderEntity>().eq(OrderEntity::getMemberId,memberRespVo.getId()).orderByDesc(OrderEntity::getId)
+        );
+        List<OrderEntity> collect = page.getRecords().stream().map(order -> {
+            List<OrderItemEntity> itemEntities = orderItemService.list(new LambdaQueryWrapper<OrderItemEntity>().eq(OrderItemEntity::getOrderSn, order.getOrderSn()));
+            order.setOrderItemEntities(itemEntities);
+            return order;
+        }).collect(Collectors.toList());
+        page.setRecords(collect);
+        return new PageUtils(page);
+    }
+
 
     @Override
     public PayVO getOrderPay(String orderSn) {
