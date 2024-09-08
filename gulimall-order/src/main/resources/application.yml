@@ -1,18 +1,19 @@
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://192.168.205.100:3306/gulimall_oms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false
+    url: jdbc:mysql://192.168.238.100:3306/gulimall_oms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false
     username: root
     password: 342589
     druid:
       driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://192.168.205.100:3306/gulimall_oms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false
+      url: jdbc:mysql://192.168.238.100:3306/gulimall_oms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false
       username: root
       password: 342589
   rabbitmq:
-    host: 192.168.205.100
+    host: 192.168.238.100
     port: 5672
     virtual-host: /
+    #如果消息未能路由到任何队列，将会触发回调，通常结合 mandatory 选项使用。
     publisher-returns: true
     template:
       #只要抵达队列，以异步方式优先回调returnconfirm
@@ -21,6 +22,7 @@ spring:
       simple:
         #手动ack
         acknowledge-mode: manual
+        # 表示开启发布者确认机制，发送消息后会收到服务器确认消息是否成功到达交换机。这里使用了相关的 ConfirmCallback 进行异步确认
     publisher-confirm-type: correlated
     username: guest
     password: guest

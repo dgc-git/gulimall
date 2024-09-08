@@ -67,4 +67,15 @@ public class MyMQConfig {
                 "order.release.other.#",
                 null);
     }
+    @Bean
+    public Queue orderSeckillOrderQueue(){//削峰
+        return new Queue("order.seckill.order.queue",true,false,false);
+    }
+    @Bean
+    public Binding orderSeckillOrderQueueBinding(){
+        return new Binding("order.seckill.order.queue", Binding.DestinationType.QUEUE,
+                "order-event-exchange",
+                "order.seckill.order",
+                null);
+    }
 }

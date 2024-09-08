@@ -1,6 +1,5 @@
-package com.atguigu.gulimall.product.config;
+package com.atguigu.gulimall.seckill.config;
 
-import io.lettuce.core.RedisClient;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;

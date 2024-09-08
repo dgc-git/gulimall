@@ -3,6 +3,7 @@ package com.atguigu.gulimall.order.service.impl;
 import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.exception.NoStockException;
 import com.atguigu.common.to.mq.OrderTo;
+import com.atguigu.common.to.mq.SeckillOrderTo;
 import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberRespVo;
 import com.atguigu.gulimall.order.constant.OrderConstant;
@@ -73,6 +74,28 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     RabbitTemplate rabbitTemplate;
     @Autowired
     PaymentInfoService paymentInfoService;
+
+    @Override
+    public void createSeckillOrder(SeckillOrderTo seckillOrder) {
+        //保存订单
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setOrderSn(seckillOrder.getOrderSn());
+        orderEntity.setMemberId(seckillOrder.getMemberId());
+        //todo set收货地址
+        orderEntity.setStatus(com.atguigu.gulimall.order.enume.OrderConstant.OrderStatusEnum.CREATE_NEW.getCode());
+        //设置应付价格
+        BigDecimal multiply = seckillOrder.getSeckillPrice().multiply(new BigDecimal("" + seckillOrder.getNum()));
+        orderEntity.setPayAmount(multiply);
+        this.save(orderEntity);
+        //保存订单项
+        OrderItemEntity orderItemEntity = new OrderItemEntity();
+        orderItemEntity.setOrderSn(seckillOrder.getOrderSn());
+        orderItemEntity.setRealAmount(multiply);
+        //todo 设置运费
+        orderItemEntity.setSkuQuantity(seckillOrder.getNum());
+//        todo 获取当前sku的详细信息进行设置productFeignService.getSpuInfoBySkuId()
+        orderItemService.save(orderItemEntity);
+    }
 
     /**
      * 处理支付宝的支付结果
