@@ -13,12 +13,14 @@ spring:
     name: gulimall-third-party
 
   redis:
-    host: 192.168.238.100
+    host: 192.168.205.100
 server:
   port: 13000
 logging:
   level:
     com.atguigu.gulimall: debug
+
+
 
 
 

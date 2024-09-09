@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.ssoclient.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +29,7 @@ public class HelloController {
     /**
      * 需要登录
      */
+
     @GetMapping("/employees")
     public String employees(Model model, HttpSession session){
         Object loginUser = session.getAttribute("loginUser");
